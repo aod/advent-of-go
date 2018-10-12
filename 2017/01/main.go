@@ -3,12 +3,21 @@ package main
 import (
 	"fmt"
 
+	"github.com/aoktayd/adventofgode/2017/01/solution"
 	"github.com/aoktayd/adventofgode/utils"
 )
 
 func main() {
-	input := ParseInput(utils.PuzzleInput(2017, 1))
+	input, err := utils.ReadRelFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Printf("Part 1: %d\n", Solution(input, 1))
-	fmt.Printf("Part 2: %d\n", Solution(input, 2))
+	var parsedInput []byte
+	for _, v := range input {
+		parsedInput = append(parsedInput, v-48)
+	}
+
+	fmt.Printf("Part 1: %d\n", solution.Part1(parsedInput))
+	fmt.Printf("Part 2: %d\n", solution.Part2(parsedInput))
 }
