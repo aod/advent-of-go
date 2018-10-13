@@ -1,17 +1,12 @@
 package utils
 
 import (
-	"io/ioutil"
 	"path/filepath"
 	"runtime"
 )
 
-// ReadRelFile Reads a file relative to the function caller
-func ReadRelFile(fileName string) ([]byte, error) {
+// RelativePath Returns a relative path from the function caller
+func RelativePath(fileName string) string {
 	_, file, _, _ := runtime.Caller(1)
-	path := filepath.Join(filepath.Dir(file), fileName)
-
-	data, err := ioutil.ReadFile(path)
-
-	return data, err
+	return filepath.Join(filepath.Dir(file), fileName)
 }

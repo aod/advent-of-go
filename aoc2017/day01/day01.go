@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/aoktayd/adventofgode/utils"
 )
 
 func main() {
-	input, err := utils.ReadRelFile("input.txt")
+	path := utils.RelativePath("input.txt")
+	input, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
