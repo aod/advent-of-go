@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 
-	"github.com/aoktayd/adventofgode/internal/error"
 	"github.com/aoktayd/adventofgode/internal/input"
 )
 
@@ -21,39 +18,39 @@ type pos struct {
 	x, y int
 }
 
+type claimGrid map[pos][]claim
+
+func assignClaimToGrid(grid claimGrid, claim claim) {
+	for y := claim.Y; y < claim.Y+claim.Height; y++ {
+		for x := claim.X; x < claim.X+claim.Width; x++ {
+			claimPosition := pos{x, y}
+			assignedClaims := grid[claimPosition]
+			grid[claimPosition] = append(assignedClaims, claim)
+		}
+	}
+}
+
 func main() {
 	var claims []claim
 
-	byteValue, err := ioutil.ReadFile(input.Path(input.File{
-		Year:     2018,
-		Day:      3,
-		FileType: "json",
-	}))
-	error.Check(err)
-	json.Unmarshal(byteValue, &claims)
+	input.ReadJSON(input.Puzzle{Year: 2018, Day: 3}, &claims)
 
-	overlap := make(map[pos][]claim)
+	grid := make(claimGrid)
 	claimIDs := make(map[int]struct{})
+	totalInchesOverlap := 0
 
 	for _, claim := range claims {
 		claimIDs[claim.ID] = struct{}{}
-		for y := claim.Y; y < claim.Y+claim.Height; y++ {
-			for x := claim.X; x < claim.X+claim.Width; x++ {
-				overlapPosition := pos{x, y}
-				overlappingClaims := overlap[overlapPosition]
-				overlap[overlapPosition] = append(overlappingClaims, claim)
-			}
-		}
+		assignClaimToGrid(grid, claim)
 	}
 
-	totalInchesOverlap := 0
-
-	for _, overlappingClaims := range overlap {
-		if len(overlappingClaims) >= 2 {
-			totalInchesOverlap++
-			for _, claim := range overlappingClaims {
-				delete(claimIDs, claim.ID)
-			}
+	for _, assignedClaims := range grid {
+		if len(assignedClaims) < 2 {
+			continue
+		}
+		totalInchesOverlap++
+		for _, claim := range assignedClaims {
+			delete(claimIDs, claim.ID)
 		}
 	}
 
