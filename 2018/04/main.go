@@ -60,12 +60,12 @@ func main() {
 	sort.Sort(byTimestamp(sleepRecords))
 
 	// Part 1 - Find the guard that has the most minutes asleep.
-	// 					What minute does that guard spend asleep the most?
+	// What minute does that guard spend asleep the most?
 
 	// 1.1 Analyse the sleeping patterns
 	// To keep track of how often a guard goes to sleep on a specfic
 	// minute i've come up with the following map data structure
-	// GuardID: []Minute: Amount
+	// GuardID: Minute: Amount
 	sleepPatterns := make(map[int]map[int]int)
 
 	currentGuard := 0
@@ -91,14 +91,26 @@ func main() {
 		}
 	}
 
+	// For part 2
+	var mostFrequentSleeper int
+	mostFrequentMinute := 0
+	biggestFrequentSleepMinutes := 0
+
 	// 1.2 Which guard slept the most?
 	var sleepiestGuard int
 	biggestSleepTime := 0
 
 	for guardID, sleepPattern := range sleepPatterns {
 		currentSleepTime := 0
-		for _, minutesSlept := range sleepPattern {
+		for minute, minutesSlept := range sleepPattern {
 			currentSleepTime += minutesSlept
+
+			// Part 2 - Of all guards, which guard is most frequently asleep on the same minute?
+			if minutesSlept > biggestFrequentSleepMinutes {
+				biggestFrequentSleepMinutes = minutesSlept
+				mostFrequentMinute = minute
+				mostFrequentSleeper = guardID
+			}
 		}
 
 		if currentSleepTime > biggestSleepTime {
@@ -118,4 +130,5 @@ func main() {
 	}
 
 	fmt.Println("Part 1", sleepiestGuard*sleepiestMinute)
+	fmt.Println("Part 2", mostFrequentSleeper*mostFrequentMinute)
 }
