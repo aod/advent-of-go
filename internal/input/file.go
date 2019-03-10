@@ -51,7 +51,7 @@ func ReadJSON(aocPuzzle Puzzle, v interface{}) {
 	error.Check(err)
 }
 
-// Scanner does something
+// Scanner returns a new scanner and an open file descriptor from an AOC puzzle input file
 func Scanner(aocPuzzle Puzzle) (*bufio.Scanner, *os.File) {
 	f, err := os.Open(Path(File{Puzzle: aocPuzzle, FileType: ".txt"}))
 	error.Check(err)
