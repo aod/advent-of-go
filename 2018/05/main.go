@@ -42,16 +42,16 @@ func chainReaction(polymer []byte) []byte {
 
 func main() {
 	input := input.Read(input.File{Puzzle: input.Puzzle{Year: 2018, Day: 5}, FileType: ".txt"})
+	inputLength := len(input)
 
 	part1 := chainReaction(input)
 
 	const baseUnit = 65
 	const unitTypes = 25
-	smallestPolymer := 50000 // input size
+	smallestPolymer := inputLength
 
 	for i := 0; i <= unitTypes; i++ {
 		unitToRemove := byte(baseUnit + i)
-
 		var polymer []byte
 		for _, unit := range input {
 			if unit == unitToRemove || unit == unitToRemove+unitDifference {
@@ -60,7 +60,7 @@ func main() {
 			polymer = append(polymer, unit)
 		}
 
-		if len(input) == len(polymer) {
+		if inputLength == len(polymer) {
 			continue
 		}
 
