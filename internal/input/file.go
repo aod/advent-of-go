@@ -1,10 +1,12 @@
 package input
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"go/build"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -19,11 +21,6 @@ const JSON = ".json"
 type File struct {
 	Puzzle   Puzzle
 	FileType string
-}
-
-// Puzzle describes an AOC puzzle date
-type Puzzle struct {
-	Year, Day int
 }
 
 const inputFileName = "input"
@@ -52,4 +49,11 @@ func ReadJSON(aocPuzzle Puzzle, v interface{}) {
 	inputFile := File{Puzzle: aocPuzzle, FileType: JSON}
 	err := json.Unmarshal(Read(inputFile), &v)
 	error.Check(err)
+}
+
+// Scanner does something
+func Scanner(aocPuzzle Puzzle) (*bufio.Scanner, *os.File) {
+	f, err := os.Open(Path(File{Puzzle: aocPuzzle, FileType: ".txt"}))
+	error.Check(err)
+	return bufio.NewScanner(f), f
 }
