@@ -20,16 +20,6 @@ type pos struct {
 
 type claimGrid map[pos][]claim
 
-func assignClaimToGrid(grid claimGrid, claim claim) {
-	for y := claim.Y; y < claim.Y+claim.Height; y++ {
-		for x := claim.X; x < claim.X+claim.Width; x++ {
-			claimPosition := pos{x, y}
-			assignedClaims := grid[claimPosition]
-			grid[claimPosition] = append(assignedClaims, claim)
-		}
-	}
-}
-
 func main() {
 	var claims []claim
 
@@ -56,4 +46,14 @@ func main() {
 
 	fmt.Println("Part 1: ", totalInchesOverlap)
 	fmt.Println("Part 2: ", claimIDs)
+}
+
+func assignClaimToGrid(grid claimGrid, claim claim) {
+	for y := claim.Y; y < claim.Y+claim.Height; y++ {
+		for x := claim.X; x < claim.X+claim.Width; x++ {
+			claimPosition := pos{x, y}
+			assignedClaims := grid[claimPosition]
+			grid[claimPosition] = append(assignedClaims, claim)
+		}
+	}
 }

@@ -24,34 +24,6 @@ func (a byTimestamp) Len() int           { return len(a) }
 func (a byTimestamp) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byTimestamp) Less(i, j int) bool { return a[i].timestamp.Before(a[j].timestamp) }
 
-func parseInput() []sleepRecord {
-	var sleepRecords []sleepRecord
-
-	s, f := input.Scanner(input.Puzzle{Year: 2018, Day: 4})
-	defer f.Close()
-
-	for s.Scan() {
-		line := s.Text()
-
-		split := strings.SplitAfter(line, "]")
-		timestamp, err := time.Parse(guardShiftTimeLayout, strings.Trim(split[0], "[]"))
-		error.Check(err)
-
-		var guardID int
-		asleep := false
-		rest := split[1]
-		if strings.Contains(rest, "Guard") {
-			fmt.Sscanf(rest, " Guard #%d", &guardID)
-		} else if strings.Contains(rest, "asleep") {
-			asleep = true
-		}
-
-		sleepRecords = append(sleepRecords, sleepRecord{guardID, timestamp, asleep})
-	}
-
-	return sleepRecords
-}
-
 func main() {
 	sleepRecords := parseInput()
 
@@ -131,4 +103,32 @@ func main() {
 
 	fmt.Println("Part 1", sleepiestGuard*sleepiestMinute)
 	fmt.Println("Part 2", mostFrequentSleeper*mostFrequentMinute)
+}
+
+func parseInput() []sleepRecord {
+	var sleepRecords []sleepRecord
+
+	s, f := input.Scanner(input.Puzzle{Year: 2018, Day: 4})
+	defer f.Close()
+
+	for s.Scan() {
+		line := s.Text()
+
+		split := strings.SplitAfter(line, "]")
+		timestamp, err := time.Parse(guardShiftTimeLayout, strings.Trim(split[0], "[]"))
+		error.Check(err)
+
+		var guardID int
+		asleep := false
+		rest := split[1]
+		if strings.Contains(rest, "Guard") {
+			fmt.Sscanf(rest, " Guard #%d", &guardID)
+		} else if strings.Contains(rest, "asleep") {
+			asleep = true
+		}
+
+		sleepRecords = append(sleepRecords, sleepRecord{guardID, timestamp, asleep})
+	}
+
+	return sleepRecords
 }
