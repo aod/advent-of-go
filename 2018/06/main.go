@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math"
+	"os"
 
-	"github.com/aoktayd/adventofgode/internal/input"
+	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 type coordinate struct {
@@ -134,12 +136,14 @@ func main() {
 }
 
 func parseInput(coordinates *[]coordinate) {
-	s, f := input.Scanner(input.Puzzle{Year: 2018, Day: 6})
-	defer f.Close()
+	file, err := os.Open("input.txt")
+	error.Check(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
 
-	for s.Scan() {
+	for scanner.Scan() {
 		var x, y int
-		fmt.Sscanf(s.Text(), "%d, %d", &x, &y)
+		fmt.Sscanf(scanner.Text(), "%d, %d", &x, &y)
 		*coordinates = append(*coordinates, coordinate{x, y})
 	}
 }
