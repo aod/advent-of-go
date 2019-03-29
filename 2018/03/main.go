@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 
-	"github.com/aoktayd/adventofgode/internal/input"
+	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 type claim struct {
@@ -23,7 +25,9 @@ type claimGrid map[pos][]claim
 func main() {
 	var claims []claim
 
-	input.ReadJSON(input.Puzzle{Year: 2018, Day: 3}, &claims)
+	fileContents, err := ioutil.ReadFile("input.json")
+	error.Check(err)
+	json.Unmarshal(fileContents, &claims)
 
 	grid := make(claimGrid)
 	claimIDs := make(map[int]struct{})

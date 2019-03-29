@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 
-	"github.com/aoktayd/adventofgode/internal/input"
+	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 const unitDifference byte = 32
 
 func main() {
-	input := input.Read(input.File{Puzzle: input.Puzzle{Year: 2018, Day: 5}, FileType: ".txt"})
+	input, err := ioutil.ReadFile("input.txt")
+	error.Check(err)
 
 	inputLength := len(input)
 	smallestPolymer := inputLength

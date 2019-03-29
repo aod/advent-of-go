@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/aoktayd/adventofgode/internal/error"
-	"github.com/aoktayd/adventofgode/internal/input"
+	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 const guardShiftTimeLayout = "2006-01-02 15:04"
@@ -108,11 +109,13 @@ func main() {
 func parseInput() []sleepRecord {
 	var sleepRecords []sleepRecord
 
-	s, f := input.Scanner(input.Puzzle{Year: 2018, Day: 4})
-	defer f.Close()
+	file, err := os.Open("input.txt")
+	error.Check(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
 
-	for s.Scan() {
-		line := s.Text()
+	for scanner.Scan() {
+		line := scanner.Text()
 
 		split := strings.SplitAfter(line, "]")
 		timestamp, err := time.Parse(guardShiftTimeLayout, strings.Trim(split[0], "[]"))
