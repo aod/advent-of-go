@@ -5,158 +5,128 @@ import (
 	"fmt"
 	"math"
 	"os"
-
-	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
-type coordinate struct {
+type position struct {
 	x, y int
 }
 
-func (c *coordinate) distance(to coordinate) int {
-	return int(math.Abs(float64(c.x-to.x)) + math.Abs(float64(c.y-to.y)))
+func (p *position) dist(to position) int {
+	return int(math.Abs(float64(p.x-to.x)) + math.Abs(float64(p.y-to.y)))
 }
 
-func (c *coordinate) closest(coordinates []coordinate) (*coordinate, bool) {
-	var closestCoordinate *coordinate
+func (p *position) closest(positions []*position) (*position, int, bool) {
+	var closestPosition *position
+	lowestDistance := math.MaxInt32
+	distances := map[int]int{}
 
-	closestDistance := math.MaxInt32
-	distances := make(map[int]int)
-
-	for key, coordinate := range coordinates {
-		dist := c.distance(coordinate)
+	for _, pos := range positions {
+		dist := p.dist(*pos)
 		distances[dist]++
-		if dist < closestDistance {
-			closestDistance = dist
-			closestCoordinate = &coordinates[key]
+		if dist < lowestDistance {
+			lowestDistance = dist
+			closestPosition = pos
 		}
 	}
 
-	return closestCoordinate, distances[closestDistance] >= 2
+	return closestPosition, lowestDistance, distances[lowestDistance] > 1
 }
 
 func main() {
-	var coordinates []coordinate
-	parseInput(&coordinates)
-
-	maxCoordinate := maxBoundingCoordinate(coordinates)
-
-	maxCoordinate.y++
-	maxCoordinate.x++
-
-	// Keeps track of the size of the locations (coordinates from the input a.k.a. input.txt)
-	areas := make(map[coordinate]int)
-
-	// This is for every position in the partial grid which is finite
-	// whereas the actual grid extends infinitely in all directions.
-	// Every coordinate on the grid points to the closest location.
-	grid := make(map[coordinate]*coordinate)
-
-	// Keeps track of what coordinates are closest to a location
-	locationCoordinates := make(map[coordinate][]*coordinate)
-
-	// Calculate the distances to every location of every coordinate on the grid
-	for y := 0; y < maxCoordinate.y; y++ {
-		for x := 0; x < maxCoordinate.x; x++ {
-			gridCoordinate := coordinate{x, y}
-			closestCoordinate, hasTwoOrMore := gridCoordinate.closest(coordinates)
-
-			// If the coordinate on the grid has 2 or more locations with the same distance
-			// the area size is not increased
-			if hasTwoOrMore {
-				continue
-			}
-
-			locationCoordinates[*closestCoordinate] = append(locationCoordinates[*closestCoordinate], &gridCoordinate)
-			grid[gridCoordinate] = closestCoordinate
-			areas[*closestCoordinate]++
-		}
-	}
-
-	// Remove coordinates which extend infinitly by checking to which
-	// main coordinate every grid coordinate points to at the border
-	for y := 0; y < maxCoordinate.y; y++ {
-		for x := 0; x < maxCoordinate.x; x++ {
-			gridCoordinate := coordinate{x, y}
-
-			// If we're not at the top or the bottom of the grid
-			// only check the left and right side
-			if y > 0 && y < maxCoordinate.y-1 {
-				x += maxCoordinate.x - 2
-			}
-
-			coordinate, coordinateExists := grid[gridCoordinate]
-
-			// fmt.Println("H", x, y, coordinate, coordinateExists)
-
-			if !coordinateExists {
-				continue
-			}
-
-			// fmt.Println("deleting", coordinate)
-
-			delete(areas, *coordinate)
-			delete(locationCoordinates, *coordinate)
-		}
-	}
-
-	// The largest area size that isn't infinite
-	biggestAreaSize := 0
-
-	for _, areaSize := range areas {
-		if areaSize > biggestAreaSize {
-			biggestAreaSize = areaSize
-		}
-	}
-
-	// This is the size of the region where the region is near as many coordinates as possible
-	bestReagionSize := len(locationCoordinates)
-
-	const maxDistance = 10000
-
-	for _, lCoordinates := range locationCoordinates {
-		for _, gridCoordinate := range lCoordinates {
-			totalDistance := 0
-			for _, location := range coordinates {
-				totalDistance += gridCoordinate.distance(location)
-			}
-			if totalDistance < maxDistance {
-				bestReagionSize++
-			}
-		}
-	}
-
-	// fmt.Println(areas)
-	// fmt.Println(locationCoordinates)
-
-	fmt.Println("Part 1: ", biggestAreaSize)
-	// 42132 too high
-	// 32268 Too low
-	fmt.Println("Part 2: ", bestReagionSize)
-}
-
-func parseInput(coordinates *[]coordinate) {
-	file, err := os.Open("input.txt")
-	error.Check(err)
+	file, _ := os.Open("input.txt")
+	fileScanner := bufio.NewScanner(file)
 	defer file.Close()
-	scanner := bufio.NewScanner(file)
 
-	for scanner.Scan() {
+	var positions []*position
+	for fileScanner.Scan() {
 		var x, y int
-		fmt.Sscanf(scanner.Text(), "%d, %d", &x, &y)
-		*coordinates = append(*coordinates, coordinate{x, y})
+		fmt.Sscanf(fileScanner.Text(), "%d, %d", &x, &y)
+		positions = append(positions, &position{x: x, y: y})
 	}
+
+	minBoundingPosition, maxBoundingPosition := getBoundingPositions(positions)
+
+	grid := map[position]*position{}
+	area := map[*position][]*position{}
+	for y := minBoundingPosition.y; y <= maxBoundingPosition.y; y++ {
+		for x := minBoundingPosition.x; x <= maxBoundingPosition.x; x++ {
+			pos := &position{x: x, y: y}
+			closestPosition, _, hasTwoOrMoreClosestPositions := pos.closest(positions)
+
+			if hasTwoOrMoreClosestPositions {
+				continue
+			}
+
+			area[closestPosition] = append(area[closestPosition], pos)
+			grid[*pos] = closestPosition
+		}
+	}
+
+	// Loops through border to check infinite areas
+	infiniteAreaPositions := map[*position]bool{}
+	for y := minBoundingPosition.y; y <= maxBoundingPosition.y; y++ {
+		isBetweenTopOrBottom := y > minBoundingPosition.y && y < maxBoundingPosition.y
+
+		for x := minBoundingPosition.x; x <= maxBoundingPosition.x; x++ {
+			pos := grid[position{x: x, y: y}]
+
+			if _, exists := infiniteAreaPositions[pos]; pos != nil && !exists {
+				infiniteAreaPositions[pos] = true
+			}
+
+			if isBetweenTopOrBottom {
+				x += maxBoundingPosition.x - minBoundingPosition.x - 1
+				continue
+			}
+		}
+	}
+
+	largestFiniteAreaSize := 0
+	for pos, areaPositions := range area {
+		if infiniteAreaPositions[pos] {
+			continue
+		}
+		if areaSize := len(areaPositions); areaSize > largestFiniteAreaSize {
+			largestFiniteAreaSize = areaSize
+		}
+	}
+
+	safeAreaSize := 0
+	for y := minBoundingPosition.y; y <= maxBoundingPosition.y; y++ {
+		for x := minBoundingPosition.x; x <= maxBoundingPosition.x; x++ {
+			gridPos := &position{x: x, y: y}
+			sumDistance := 0
+			for _, pos := range positions {
+				sumDistance += gridPos.dist(*pos)
+			}
+			if sumDistance < 10000 {
+				safeAreaSize++
+			}
+		}
+	}
+
+	fmt.Println("Part 1: ", largestFiniteAreaSize)
+	fmt.Println("Part 2: ", safeAreaSize)
 }
 
-func maxBoundingCoordinate(coordinates []coordinate) coordinate {
-	bounding := coordinate{0, 0}
-	for _, coordinate := range coordinates {
-		if coordinate.x > bounding.x {
-			bounding.x = coordinate.x
+func getBoundingPositions(positions []*position) (position, position) {
+	minBoundingPosition := position{math.MaxInt32, math.MaxInt32}
+	maxBoundingPosition := position{0, 0}
+
+	for _, pos := range positions {
+		if pos.x > maxBoundingPosition.x {
+			maxBoundingPosition.x = pos.x
 		}
-		if coordinate.y > bounding.y {
-			bounding.y = coordinate.y
+		if pos.y > maxBoundingPosition.y {
+			maxBoundingPosition.y = pos.y
+		}
+		if pos.x < minBoundingPosition.x {
+			minBoundingPosition.x = pos.x
+		}
+		if pos.y < minBoundingPosition.y {
+			minBoundingPosition.y = pos.y
 		}
 	}
-	return bounding
+
+	return minBoundingPosition, maxBoundingPosition
 }
