@@ -2,7 +2,7 @@ Welcome to my [Advent of Code](https://adventofcode.com) solutions repository wr
 
 # Completed puzzles
 
-Every completed puzzle contains a README in the folder which explains the context of the puzzle. You can also check the Advent of Code website for more info.
+Every completed puzzle contains a README in the folder which explains the context of the puzzle (taken directly from the Advent of Code website).
 
 * [2018/03 - No Matter How You Slice It](./2018/03)
 * [2018/04 - Repose Record](./2018/04)
