@@ -7,8 +7,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 const guardShiftTimeLayout = "2006-01-02 15:04"
@@ -109,8 +107,7 @@ func main() {
 func parseInput() []sleepRecord {
 	var sleepRecords []sleepRecord
 
-	file, err := os.Open("input.txt")
-	error.Check(err)
+	file, _ := os.Open("input.txt")
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
@@ -118,8 +115,7 @@ func parseInput() []sleepRecord {
 		line := scanner.Text()
 
 		split := strings.SplitAfter(line, "]")
-		timestamp, err := time.Parse(guardShiftTimeLayout, strings.Trim(split[0], "[]"))
-		error.Check(err)
+		timestamp, _ := time.Parse(guardShiftTimeLayout, strings.Trim(split[0], "[]"))
 
 		var guardID int
 		asleep := false

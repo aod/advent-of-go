@@ -3,15 +3,12 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-
-	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 const unitDifference byte = 32
 
 func main() {
-	input, err := ioutil.ReadFile("input.txt")
-	error.Check(err)
+	input, _ := ioutil.ReadFile("input.txt")
 
 	inputLength := len(input)
 	smallestPolymer := inputLength

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-
-	"github.com/aoktayd/adventofcode-go/internal/error"
 )
 
 type claim struct {
@@ -25,8 +23,7 @@ type claimGrid map[pos][]claim
 func main() {
 	var claims []claim
 
-	fileContents, err := ioutil.ReadFile("input.json")
-	error.Check(err)
+	fileContents, _ := ioutil.ReadFile("input.json")
 	json.Unmarshal(fileContents, &claims)
 
 	grid := make(claimGrid)
