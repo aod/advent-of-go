@@ -10,19 +10,6 @@ type marble struct {
 	prev, next *marble
 }
 
-func (m *marble) printCircle() {
-	a := m
-	for {
-		print(a.score)
-		a = a.next
-		if a == m {
-			break
-		}
-		print(",")
-	}
-	print("\n")
-}
-
 func main() {
 	var maxPlayers, lastMarbleWorth int
 
@@ -50,10 +37,6 @@ func main() {
 
 			toRemove := lastPlayedMarble.prev.prev.prev.prev.prev.prev.prev
 			scores[currentPlayer] += toRemove.score
-
-			if toRemove == firstMarble {
-				firstMarble = toRemove.next
-			}
 
 			toRemove.prev.next = toRemove.next
 			toRemove.next.prev = toRemove.prev
