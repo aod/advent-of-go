@@ -20,6 +20,21 @@ func main() {
 		&maxPlayers, &lastMarbleWorth,
 	)
 
+	fmt.Println("Part 1: ", solve(maxPlayers, lastMarbleWorth))
+	fmt.Println("Part 2: ", solve(maxPlayers, lastMarbleWorth*100))
+}
+
+func highestScore(scores map[int]int) int {
+	highest := -1
+	for _, score := range scores {
+		if score > highest {
+			highest = score
+		}
+	}
+	return highest
+}
+
+func solve(maxPlayers, lastMarbleWorth int) int {
 	currentPlayer := 0
 	scores := make(map[int]int)
 
@@ -55,15 +70,5 @@ func main() {
 		currentPlayer = (currentPlayer + 1) % maxPlayers
 	}
 
-	fmt.Println("Part 1: ", highestScore(scores))
-}
-
-func highestScore(scores map[int]int) int {
-	highest := -1
-	for _, score := range scores {
-		if score > highest {
-			highest = score
-		}
-	}
-	return highest
+	return highestScore(scores)
 }
