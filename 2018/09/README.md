@@ -43,12 +43,11 @@ For example, suppose there are 9 players. After the marble with value 0 is place
 The goal is to be the player with the highest score after the last marble is used up. Assuming the example above ends after the marble numbered 25, the winning score is 23+9=32 (because player 5 kept marble 23 and removed marble 9, while no other player got any points in this very short example game).
 
 Here are a few more examples:
-
-10 players; last marble is worth 1618 points: high score is 8317
-13 players; last marble is worth 7999 points: high score is 146373
-17 players; last marble is worth 1104 points: high score is 2764
-21 players; last marble is worth 6111 points: high score is 54718
-30 players; last marble is worth 5807 points: high score is 37305
+* 10 players; last marble is worth 1618 points: high score is 8317
+* 13 players; last marble is worth 7999 points: high score is 146373
+* 17 players; last marble is worth 1104 points: high score is 2764
+* 21 players; last marble is worth 6111 points: high score is 54718
+* 30 players; last marble is worth 5807 points: high score is 37305
 
 **What is the winning Elf's score?**
 
