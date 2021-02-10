@@ -1,5 +1,3 @@
-* [2018/03 - No Matter How You Slice It](./2018/03)
-* [2018/04 - Repose Record](./2018/04)
-* [2018/05 - Alchemical Reduction](./2018/05)
-* [2018/06 - Chronal Coordinates](./2018/06)
-* [2018/09 - Marble Mania](./2018/09)
+# advent-of-go
+
+Advent of Code solutions in Go.
